@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Viasat Field Ops">
+<title>Viasat Field Ops</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07090c;--surf:#0e1318;--surf2:#141c24;--border:#1d2a36;
+  --text:#cdd8e3;--muted:#4a6070;--dim:#1a2530;
+  --orange:#f97316;--green:#3ddc84;--red:#ff6464;--yellow:#fbbf24;--blue:#5ba3f5;--cyan:#22d3ee;
+  --font:'JetBrains Mono',monospace;--head:'Barlow Condensed',sans-serif;
+  --r:11px;--nav:68px;--hdr:58px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{background:var(--bg);color:var(--text);font-family:var(--font);height:100%;overflow:hidden;}
+#app{max-width:960px;margin:0 auto;height:100vh;display:flex;flex-direction:column;}
+#hdr{height:var(--hdr);padding:0 1.1rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--bg);flex-shrink:0;z-index:40;}
+.logo-text{font-family:var(--head);font-size:1.45rem;font-weight:800;letter-spacing:.08em;color:var(--orange);}
+.logo-sub{font-size:.55rem;color:var(--muted);letter-spacing:.1em;}
+#user-chip{display:flex;align-items:center;gap:.5rem;background:var(--surf);border:1px solid var(--border);border-radius:8px;padding:.35rem .7rem;cursor:pointer;}
+#user-chip .uname{font-size:.65rem;color:var(--text);}
+#user-chip .urole{font-size:.52rem;color:var(--muted);}
+#sbar{height:26px;display:flex;align-items:center;gap:.5rem;padding:0 1.1rem;background:var(--surf);border-bottom:1px solid var(--border);flex-shrink:0;}
+.sdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.slbl{font-size:.57rem;letter-spacing:.07em;}
+.sbtn{margin-left:auto;background:none;border:1px solid var(--border);border-radius:5px;color:var(--muted);font-size:.57rem;padding:.16rem .5rem;cursor:pointer;font-family:var(--font);display:none;}
+#content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:1.1rem;padding-bottom:calc(var(--nav) + .8rem);}
+#nav{height:var(--nav);background:var(--bg);border-top:1px solid var(--border);display:flex;flex-shrink:0;padding-bottom:env(safe-area-inset-bottom,0px);}
+#nav button{flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.18rem;border-top:2.5px solid transparent;padding:.4rem 0;}
+#nav button.active{border-top-color:var(--orange);}
+#nav button .ni{font-size:1.2rem;line-height:1;}
+#nav button .nl{font-size:.5rem;letter-spacing:.06em;color:var(--muted);}
+#nav button.active .nl{color:var(--orange);}
+.card{background:var(--surf);border:1px solid var(--border);border-radius:var(--r);padding:.9rem;margin-bottom:.65rem;}
+.card-title{font-size:.6rem;color:var(--orange);letter-spacing:.12em;margin-bottom:.6rem;}
+.kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.6rem;margin-bottom:.8rem;}
+@media(min-width:560px){.kpi-grid{grid-template-columns:repeat(4,1fr);}}
+.kpi{background:var(--surf);border:1px solid var(--border);border-radius:var(--r);padding:.85rem;}
+.kpi-l{font-size:.52rem;color:var(--muted);letter-spacing:.1em;margin-bottom:.35rem;}
+.kpi-v{font-family:var(--head);font-size:2.1rem;font-weight:700;line-height:1;}
+.kpi-s{font-size:.57rem;color:var(--muted);margin-top:.25rem;}
+.badge{display:inline-flex;align-items:center;padding:.15rem .45rem;border-radius:4px;font-size:.57rem;font-weight:700;letter-spacing:.06em;white-space:nowrap;}
+.b-od{background:#2a0d0d;color:var(--red);}
+.b-urg{background:#2a1d00;color:var(--yellow);}
+.b-soon{background:#1a1200;color:#fb923c;}
+.b-ok{background:#0d2218;color:var(--green);}
+.b-pm{background:#0d2218;color:var(--green);}
+.b-svc{background:#0d1a2a;color:var(--blue);}
+.b-ins{background:#1a0d2a;color:#c084fc;}
+.b-dec{background:#2a1a0d;color:#fb923c;}
+.b-prj{background:#0d2218;color:var(--cyan);}
+.b-pend{background:#2a2a0d;color:var(--yellow);}
+.b-appr{background:#0d2218;color:var(--green);}
+.b-rft-y{background:#0d2218;color:var(--green);}
+.b-rft-n{background:#2a0d0d;color:var(--red);}
+.fl{display:block;font-size:.58rem;color:var(--muted);letter-spacing:.1em;margin-bottom:.28rem;margin-top:.8rem;}
+.fi{display:block;width:100%;background:#050709;border:1px solid var(--border);border-radius:8px;color:var(--text);padding:.7rem .9rem;font-size:.85rem;font-family:var(--font);outline:none;}
+.fi:focus{border-color:var(--orange);}
+.fi::placeholder{color:var(--dim);}
+textarea.fi{min-height:72px;resize:vertical;}
+select.fi{-webkit-appearance:none;}
+.bp{width:100%;padding:.85rem;background:var(--orange);border:none;border-radius:var(--r);color:#000;font-weight:700;font-family:var(--head);font-size:1.05rem;letter-spacing:.06em;cursor:pointer;}
+.bp:disabled{opacity:.3;cursor:not-allowed;}
+.bs{width:100%;padding:.8rem;background:var(--surf);border:1px solid var(--border);border-radius:var(--r);color:var(--muted);font-weight:700;font-family:var(--head);font-size:1rem;letter-spacing:.06em;cursor:pointer;}
+.br{display:flex;gap:.6rem;margin-top:.7rem;}
+.steps{display:flex;gap:.35rem;margin-bottom:1.3rem;}
+.step{flex:1;}
+.step-b{height:3px;border-radius:2px;margin-bottom:.22rem;}
+.step-b.done,.step-b.active{background:var(--orange);}
+.step-b.pend{background:var(--border);}
+.step span{font-size:.52rem;letter-spacing:.07em;}
+.step.active span{color:var(--orange);}
+.step.pend span,.step.done span{color:var(--muted);}
+.ci{display:flex;align-items:flex-start;gap:.7rem;padding:.65rem 0;border-bottom:1px solid var(--bg);}
+.cb{width:22px;height:22px;min-width:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;}
+.cb.on{background:var(--orange);border:2px solid var(--orange);}
+.cb.on::after{content:'✓';color:#000;font-size:.7rem;font-weight:900;}
+.cb.off{background:transparent;border:2px solid var(--border);}
+.cb.na{background:#111;border:2px solid #333;}
+.cb.na::after{content:'N/A';color:var(--muted);font-size:.4rem;font-weight:700;}
+.cl{font-size:.82rem;line-height:1.4;margin-top:2px;}
+.cl.on{color:var(--text);}
+.cl.off,.cl.na{color:var(--muted);}
+.sr{padding:.7rem .9rem;border-bottom:1px solid var(--bg);cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
+.sr.sel{background:#0f1820;}
+.sr.sel .sn{color:var(--orange);}
+.rec{background:var(--surf);border:1px solid var(--border);border-radius:var(--r);margin-bottom:.55rem;overflow:hidden;}
+.rec-hd{padding:.8rem .9rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
+.rec-bd{padding:.7rem .9rem .9rem;border-top:1px solid var(--border);}
+.drow{display:flex;gap:.7rem;padding:.27rem 0;border-bottom:1px solid #0a0e14;}
+.dk{font-size:.58rem;color:var(--muted);min-width:72px;padding-top:.1rem;}
+.dv{font-size:.76rem;flex:1;line-height:1.4;}
+.tags{display:flex;gap:.35rem;overflow-x:auto;padding-bottom:.2rem;margin-bottom:.75rem;scrollbar-width:none;}
+.tags::-webkit-scrollbar{display:none;}
+.tag{padding:.32rem .65rem;border-radius:5px;font-size:.6rem;font-weight:600;letter-spacing:.05em;cursor:pointer;white-space:nowrap;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:var(--font);}
+.tag.on{background:var(--orange);border-color:var(--orange);color:#000;}
+.rft-row{display:flex;gap:.6rem;margin-top:.35rem;}
+.rft-btn{flex:1;padding:.75rem;border-radius:8px;font-weight:700;font-size:.85rem;cursor:pointer;font-family:var(--font);border:2px solid var(--border);background:transparent;color:var(--muted);}
+.rft-btn.yes.on{border-color:var(--green);background:#0a1e12;color:var(--green);}
+.rft-btn.no.on{border-color:var(--red);background:#1e0a0a;color:var(--red);}
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-top:.5rem;}
+.photo-slot{aspect-ratio:1;border:2px dashed var(--border);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;position:relative;cursor:pointer;}
+.photo-slot img{width:100%;height:100%;object-fit:cover;}
+.photo-del{position:absolute;top:3px;right:3px;background:rgba(0,0,0,.75);border:none;border-radius:50%;width:22px;height:22px;color:var(--red);cursor:pointer;font-size:.75rem;display:flex;align-items:center;justify-content:center;}
+.photo-add-ico{color:var(--muted);font-size:1.6rem;}
+.photo-add-lbl{font-size:.55rem;color:var(--muted);margin-top:.2rem;}
+.vsat-grid{display:grid;grid-template-columns:1fr 1fr;gap:.45rem;margin-top:.5rem;}
+.vsat-f label{display:block;font-size:.55rem;color:var(--muted);letter-spacing:.07em;margin-bottom:.18rem;}
+.vsat-f input{display:block;width:100%;background:#050709;border:1px solid var(--border);border-radius:6px;color:var(--text);padding:.5rem .65rem;font-size:.78rem;font-family:var(--font);outline:none;}
+.vsat-f input:focus{border-color:var(--orange);}
+.pm-bar{height:5px;border-radius:3px;background:var(--border);overflow:hidden;margin:.3rem 0;}
+.pm-bar-fill{height:100%;border-radius:3px;background:var(--orange);}
+.eng-row{display:flex;align-items:center;justify-content:space-between;padding:.7rem .9rem;background:var(--surf);border:1px solid var(--border);border-radius:8px;margin-bottom:.4rem;}
+.icon-btn{background:none;border:1px solid var(--border);border-radius:6px;padding:.3rem .55rem;font-size:.72rem;cursor:pointer;font-family:var(--font);color:var(--muted);}
+#sig-modal{position:fixed;inset:0;background:rgba(0,0,0,.93);display:none;align-items:center;justify-content:center;z-index:999;padding:1.1rem;}
+.sig-box{background:var(--surf);border:1px solid var(--border);border-radius:14px;padding:1.4rem;width:100%;max-width:500px;}
+#sig-canvas{background:#050709;border:1px solid var(--border);border-radius:8px;display:block;width:100%;touch-action:none;cursor:crosshair;}
+#confirm-modal{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;z-index:1000;padding:1.1rem;}
+.confirm-box{background:var(--surf);border:1px solid var(--border);border-radius:14px;padding:1.5rem;width:100%;max-width:360px;text-align:center;}
+#login-screen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:2000;padding:2rem;}
+.login-logo{font-family:var(--head);font-size:3rem;font-weight:800;color:var(--orange);letter-spacing:.1em;margin-bottom:.2rem;}
+.login-sub{font-size:.65rem;color:var(--muted);letter-spacing:.15em;margin-bottom:2.5rem;}
+.eng-btn{width:100%;max-width:360px;padding:1rem 1.2rem;background:var(--surf);border:1px solid var(--border);border-radius:var(--r);text-align:left;cursor:pointer;margin-bottom:.5rem;display:flex;align-items:center;gap:.85rem;}
+.eng-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--head);font-size:1rem;font-weight:700;flex-shrink:0;}
+.eng-name{font-size:.88rem;color:var(--text);}
+.eng-role{font-size:.58rem;color:var(--muted);letter-spacing:.06em;}
+.success{text-align:center;padding:2.5rem 1rem;}
+.success .ico{font-size:3rem;margin-bottom:.8rem;}
+.success h2{font-family:var(--head);font-size:1.7rem;letter-spacing:.08em;margin-bottom:.35rem;}
+#toast{position:fixed;bottom:calc(var(--nav) + .6rem);left:50%;transform:translateX(-50%);background:var(--surf2);border:1px solid var(--border);border-radius:9px;padding:.55rem 1rem;font-size:.68rem;letter-spacing:.05em;z-index:1001;opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap;max-width:92vw;}
+#toast.show{opacity:1;}
+.setup-step{display:flex;gap:.8rem;margin-bottom:1rem;}
+.setup-n{width:26px;height:26px;min-width:26px;border-radius:50%;background:var(--orange);color:#000;font-family:var(--head);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:.85rem;margin-top:.1rem;}
+.code-box{background:#050709;border:1px solid var(--border);border-radius:5px;padding:.5rem .8rem;font-size:.68rem;color:var(--blue);margin:.3rem 0;word-break:break-all;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.fade{animation:fadeUp .2s ease both;}
+</style>
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="login-logo">Viasat<span style="color:#22d3ee;font-size:1.4rem">.</span></div>
+  <div class="login-sub">FIELD OPS · OMAN</div>
+  <div id="login-list" style="width:100%;max-width:360px;"></div>
+</div>
+
+<div id="app" style="display:none">
+  <div id="hdr">
+    <div>
+      <div class="logo-text">Viasat<span style="color:#22d3ee;font-size:.9rem">.</span></div>
+      <div class="logo-sub">FIELD OPS · <span id="hdr-date"></span></div>
+    </div>
+    <div id="user-chip" onclick="logout()">
+      <div>
+        <div class="uname" id="chip-name"></div>
+        <div class="urole" id="chip-role"></div>
+      </div>
+      <span style="color:var(--muted);font-size:.7rem">⏻</span>
+    </div>
+  </div>
+  <div id="sbar">
+    <div class="sdot" id="sdot" style="background:var(--muted)"></div>
+    <span class="slbl" id="slbl" style="color:var(--muted)">Not connected to OneDrive</span>
+    <button class="sbtn" id="sbtn" onclick="syncNow()">↑↓ SYNC</button>
+  </div>
+  <div id="content"></div>
+  <nav id="nav">
+    <button onclick="go('dash')" id="nb-dash"><span class="ni">⊞</span><span class="nl">DASHBOARD</span></button>
+    <button onclick="go('ticket')" id="nb-ticket"><span class="ni">📋</span><span class="nl">NEW TICKET</span></button>
+    <button onclick="go('schedule')" id="nb-schedule"><span class="ni">📅</span><span class="nl">PM SCHEDULE</span></button>
+    <button onclick="go('records')" id="nb-records"><span class="ni">🗂</span><span class="nl">RECORDS</span></button>
+    <button onclick="go('admin')" id="nb-admin" style="display:none"><span class="ni">⚙</span><span class="nl">ADMIN</span></button>
+  </nav>
+</div>
+
+<!-- PERSISTENT PHOTO INPUT — must be in body, not innerHTML, for iOS camera -->
+<input type="file" id="g-photo" accept="image/*" capture="environment" style="position:fixed;top:-200px;left:-200px;opacity:0;">
+
+<!-- PDF VIEWER — full screen, no popup needed, works on iOS -->
+<div id="pdf-modal" style="display:none;position:fixed;inset:0;z-index:3000;flex-direction:column;">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:.7rem 1rem;background:#1e64b4;flex-shrink:0;">
+    <span id="pdf-modal-title" style="color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;letter-spacing:.08em;">DOCUMENT</span>
+    <div style="display:flex;gap:.5rem;">
+      <button id="pdf-share-btn" style="background:#fff;border:none;border-radius:6px;padding:.4rem .85rem;font-size:.7rem;font-weight:700;color:#1e64b4;cursor:pointer;font-family:monospace;">🖨 PRINT / SAVE PDF</button>
+      <button onclick="closePDFModal()" style="background:rgba(255,255,255,.25);border:none;border-radius:6px;padding:.4rem .75rem;color:#fff;font-size:1.1rem;cursor:pointer;line-height:1;">✕</button>
+    </div>
+  </div>
+  <iframe id="pdf-iframe" style="flex:1;border:none;width:100%;background:#fff;-webkit-overflow-scrolling:touch;"></iframe>
+</div>
+
+<div id="sig-modal">
+  <div class="sig-box">
+    <p style="color:var(--orange);font-family:var(--head);font-size:1.1rem;letter-spacing:.08em;margin-bottom:.25rem" id="sig-title">SIGNATURE</p>
+    <p style="color:var(--muted);font-size:.68rem;margin-bottom:.75rem" id="sig-sub">Sign in the box below</p>
+    <canvas id="sig-canvas" width="460" height="160"></canvas>
+    <div class="br" style="margin-top:.75rem">
+      <button class="bs" style="flex:1" onclick="clearSig()">Clear</button>
+      <button class="bs" style="flex:1" onclick="closeSig()">Cancel</button>
+      <button class="bp" style="flex:2" onclick="confirmSig()">CONFIRM</button>
+    </div>
+  </div>
+</div>
+
+<div id="confirm-modal">
+  <div class="confirm-box">
+    <p style="font-size:1.5rem;margin-bottom:.5rem" id="cm-ico">⚠️</p>
+    <p style="font-family:var(--head);font-size:1.1rem;color:var(--text);margin-bottom:.4rem" id="cm-title">Confirm</p>
+    <p style="font-size:.75rem;color:var(--muted);margin-bottom:1.2rem" id="cm-msg">Are you sure?</p>
+    <div class="br">
+      <button class="bs" style="flex:1" onclick="closeConfirm()">Cancel</button>
+      <button class="bp" style="flex:1" id="cm-ok">OK</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════
+// VIASAT FIELD OPS v2 — Clean build
+// No external PDF library — uses HTML print window
+// Camera: persistent DOM input for iOS
+// ═══════════════════════════════════════════════
+
+// ── POWER AUTOMATE WEBHOOK ───────────────────
+// Paste your Power Automate webhook URL here after setup
+var WEBHOOK_URL = localStorage.getItem('vo2_webhook') || '';
+
+function tktToRow(t) {
+  var mats = (t.materials||[]).filter(function(m){return m.desc;}).map(function(m){
+    return (m.qty?m.qty+'x ':'')+m.desc+(m.serial?' ('+m.serial+')':'');
+  }).join('; ');
+  var hrs = t.startTime&&t.stopTime ? calcHours(t.startTime,t.stopTime) : '';
+  return {
+    ticketNo:    t.ticketNo||'',
+    date:        t.date||'',
+    type:        t.type||'',
+    siteName:    t.siteName||'',
+    customer:    t.customer||'',
+    engineer:    t.engName||'',
+    startTime:   t.startTime||'',
+    stopTime:    t.stopTime||'',
+    hoursOnSite: hrs,
+    contractNo:  t.contractNo||'',
+    caseId:      t.caseId||'',
+    description: t.desc||'',
+    rft:         t.type==='SVC'?(t.rft?'YES':'NO'):'N/A',
+    pmResult:    t.type==='PM'?(t.pmOK===true?'OK':t.pmOK===false?'ISSUES':''):'N/A',
+    materials:   mats,
+    vehicleId:   t.vehicleId||'',
+    mileage:     t.mileage||'',
+    travel:      t.travel||'',
+    photos:      (t.photos&&t.photos.length?t.photos.length+' photo(s)':'0'),
+    gps:         t.gps?(t.gps.lat+', '+t.gps.lng):'',
+    clientName:  t.clientName||'',
+    status:      t.status||'',
+    approvedBy:  t.approvedBy||'',
+    submittedAt: t.submittedAt?t.submittedAt.replace('T',' ').slice(0,16):'',
+    rigNo:       t.rigNo||''
+  };
+}
+
+async function sendToWebhook(ticket) {
+  if (!WEBHOOK_URL) return;
+  try {
+    var row = tktToRow(ticket);
+    await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(row)
+    });
+    S.lastSync = new Date().toISOString();
+    saveLocal();
+    updateSbar();
+    toast('Synced to Excel via OneDrive');
+  } catch(e) {
+    console.error('Webhook error', e);
+    // Don't show error to user — data is saved locally
+  }
+}
+
+function saveToOD()   { /* handled by webhook */ }
+function loadFromOD() { /* handled by webhook */ }
+async function syncNow() {
+  if (!WEBHOOK_URL) { go('setup'); return; }
+  toast('Webhook connected', 'var(--green)');
+}
+
+function updateSbar() {
+  var dot = document.getElementById('sdot');
+  var lbl = document.getElementById('slbl');
+  var btn = document.getElementById('sbtn');
+  if (WEBHOOK_URL) {
+    dot.style.background = 'var(--green)'; lbl.style.color = 'var(--green)';
+    lbl.textContent = S.lastSync ? 'Last sync: '+fmtDate(S.lastSync) : 'Connected — Power Automate';
+    btn.style.display = 'block';
+  } else {
+    dot.style.background = 'var(--muted)'; lbl.style.color = 'var(--muted)';
+    lbl.textContent = 'Not connected — setup Power Automate'; btn.style.display = 'none';
+  }
+}
+
+// ── LOGIN ─────────────────────────────────────
+function renderLogin() {
+  var list = document.getElementById('login-list');
+  var html = '';
+  S.engineers.filter(function(e){return e.active;}).forEach(function(e) {
+    html += '<button class="eng-btn" onclick="doLogin(\''+e.id+'\')">'
+          + '<div class="eng-avatar" style="background:'+e.color+'22;color:'+e.color+'">'+initials(e.name)+'</div>'
+          + '<div><div class="eng-name">'+e.name+'</div>'
+          + '<div class="eng-role">'+(e.role==='admin'?'ADMIN / SUPERVISOR':'FIELD ENGINEER')+'</div></div>'
+          + '</button>';
+  });
+  list.innerHTML = html;
+}
+function doLogin(id) {
+  S.user = S.engineers.find(function(e){return e.id===id;});
+  if (!S.user) return;
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  document.getElementById('chip-name').textContent = S.user.name;
+  document.getElementById('chip-role').textContent = S.user.role==='admin'?'ADMIN / SUPERVISOR':'FIELD ENGINEER';
+  document.getElementById('nb-admin').style.display = S.user.role==='admin'?'flex':'none';
+  go('dash');
+}
+function logout() {
+  showConfirm('Log Out','⏻','Log out of '+S.user.name+'?', function() {
+    S.user = null;
+    document.getElementById('app').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'flex';
+  });
+}
+
+// ── NAVIGATION ────────────────────────────────
+function go(tab) {
+  S.tab = tab;
+  document.querySelectorAll('#nav button').forEach(function(b){b.classList.remove('active');});
+  var nb = document.getElementById('nb-'+tab);
+  if (nb) nb.classList.add('active');
+  renderTab();
+}
+function renderTab() {
+  var c = document.getElementById('content');
+  c.innerHTML = '';
+  if      (S.tab==='dash')     renderDash(c);
+  else if (S.tab==='ticket')   renderNewTicket(c);
+  else if (S.tab==='schedule') renderSchedule(c);
+  else if (S.tab==='records')  renderRecords(c);
+  else if (S.tab==='admin')    renderAdmin(c);
+  else if (S.tab==='setup')    renderSetup(c);
+}
+
+// ── DASHBOARD ─────────────────────────────────
+function renderDash(c) {
+  var pmSites = S.sites.filter(function(s){return s.pm;});
+  var enriched = pmSites.map(function(s){return Object.assign({},s,pmStat(s));});
+  var overdue  = enriched.filter(function(s){return s.days!==null&&s.days<0;}).length;
+  var dueSoon  = enriched.filter(function(s){return s.days!==null&&s.days>=0&&s.days<=30;}).length;
+  var bfTotal  = S.tickets.filter(function(t){return t.type==='SVC';});
+  var rftRate  = bfTotal.length ? Math.round(bfTotal.filter(function(t){return t.rft;}).length/bfTotal.length*100) : null;
+  var thisMonth= S.tickets.filter(function(t){return t.date&&t.date.startsWith(new Date().toISOString().slice(0,7));}).length;
+  var pending  = S.tickets.filter(function(t){return t.status==='submitted';}).length;
+  var urgent   = enriched.sort(function(a,b){return (a.days===null?9999:a.days)-(b.days===null?9999:b.days);}).slice(0,6);
+  var isAdmin  = S.user.role==='admin';
+
+  var urgentRows = '';
+  urgent.forEach(function(s) {
+    urgentRows += '<div style="display:flex;justify-content:space-between;align-items:center;padding:.45rem 0;border-bottom:1px solid var(--bg)">'
+      + '<div><div style="font-size:.8rem;color:var(--text)">'+s.name+'</div>'
+      + '<div style="font-size:.62rem;color:var(--muted)">'+s.customer+' · Due '+fmtDate(s.due)+'</div></div>'
+      + '<span class="badge '+s.cls+'">'+s.label+'</span></div>';
+  });
+
+  var html = '<div class="fade">';
+  html += '<p style="font-size:.58rem;color:var(--muted);letter-spacing:.12em;margin-bottom:1rem">OPERATIONS OVERVIEW — '+S.sites.filter(function(s){return s.pm;}).length+' ACTIVE SITES</p>';
+  html += '<div class="kpi-grid">';
+  html += '<div class="kpi"><div class="kpi-l">OVERDUE PM</div><div class="kpi-v" style="color:'+(overdue?'var(--red)':'var(--green)')+'">'+overdue+'</div><div class="kpi-s">sites past due</div></div>';
+  html += '<div class="kpi"><div class="kpi-l">DUE ≤30 DAYS</div><div class="kpi-v" style="color:'+(dueSoon?'var(--yellow)':'var(--green)')+'">'+dueSoon+'</div><div class="kpi-s">sites due soon</div></div>';
+  html += '<div class="kpi"><div class="kpi-l">RFT RATE</div><div class="kpi-v" style="color:'+(rftRate===null?'var(--muted)':rftRate>=90?'var(--green)':'var(--orange)')+'">'+(rftRate===null?'—':rftRate+'%')+'</div><div class="kpi-s">'+bfTotal.length+' SVC calls</div></div>';
+  html += '<div class="kpi"><div class="kpi-l">THIS MONTH</div><div class="kpi-v" style="color:var(--blue)">'+thisMonth+'</div><div class="kpi-s">tickets raised</div></div>';
+  html += '</div>';
+  if (isAdmin && pending > 0) {
+    html += '<div class="card" style="border-color:#2a1d00;background:#100d00"><div class="card-title" style="color:var(--yellow)">PENDING APPROVAL — '+pending+' TICKET'+(pending>1?'S':'')+'</div>';
+    html += '<p style="font-size:.75rem;color:var(--muted);margin-bottom:.75rem">Review submitted tickets from your engineers.</p>';
+    html += '<button class="bp" style="background:var(--yellow);color:#000" onclick="go(\'records\')">REVIEW NOW</button></div>';
+  }
+  html += '<div class="card"><div class="card-title">PM — NEXT DUE SITES</div>'+urgentRows;
+  html += '<button class="bs" style="margin-top:.75rem;font-size:.78rem" onclick="go(\'schedule\')">VIEW ALL SITES</button></div>';
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem">';
+  html += '<button class="bp" id="dash-pm-btn">+ PM TICKET</button>';
+  html += '<button class="bs" style="border-color:var(--blue);color:var(--blue)" id="dash-svc-btn">+ SVC CALL</button></div>';
+  if (!S.odAccount) {
+    html += '<div class="card" style="margin-top:.65rem;border-color:#0d1a2a"><div class="card-title" style="color:var(--blue)">ONEDRIVE BACKUP</div>';
+    html += '<p style="font-size:.72rem;color:var(--muted);margin-bottom:.65rem">Connect OneDrive to backup all records. Shared across all 4 iPads.</p>';
+    html += '<button class="bs" style="border-color:var(--blue);color:var(--blue)" onclick="go(\'setup\')">SETUP</button></div>';
+  }
+  html += '</div>';
+  c.innerHTML = html;
+  document.getElementById('dash-pm-btn').onclick  = function() { startTkt('PM'); };
+  document.getElementById('dash-svc-btn').onclick = function() { startTkt('SVC'); };
+}
+
+// ── NEW TICKET ─────────────────────────────────
+function startTkt(type) {
+  S.newTkt = {
+    id:'TKT-'+tktNo(), ticketNo:tktNo(), type:type||'SVC',
+    siteId:'', siteName:'', customer:'', rigNo:'',
+    engId:S.user.id, engName:S.user.name,
+    contractNo:'', caseId:'',
+    date:todayStr(), startTime:nowTime(), stopTime:'',
+    desc:'',
+    vehicleId:'', mileage:'', travel:'',
+    materials:[{qty:'',desc:'',serial:''}],
+    checklist:{},
+    vsat:{ethernetStatus:'',satelliteBeamId:'',autoBeamSelection:'',modemStatus:'',demodulator:'',actualReceivePL:'',softwareVersion:'',mrcTxPower:'',frameErrorRatio:'',cwFrameErrorRatio:'',esno:''},
+    pmOK:null, photos:[], gps:null,
+    clientName:'', clientSig:'', engSig:'',
+    rft:true, status:'draft',
+    createdAt:new Date().toISOString()
+  };
+  S.tktStep = 1;
+  getGPS(function(pos){ if(S.newTkt) S.newTkt.gps = pos; });
+  go('ticket');
+}
+
+function renderNewTicket(c) {
+  if (!S.newTkt) {
+    var html = '<div class="fade"><p style="font-size:.75rem;color:var(--muted);text-align:center;padding:2rem 0 1rem">Select job type to begin</p>';
+    html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem">';
+    ['PM','SVC','INS','DEC','PRJ'].forEach(function(t) {
+      html += '<button class="bs" id="start-'+t+'" style="font-size:.9rem">'+t+'</button>';
+    });
+    html += '</div></div>';
+    c.innerHTML = html;
+    ['PM','SVC','INS','DEC','PRJ'].forEach(function(t) {
+      document.getElementById('start-'+t).onclick = function() { startTkt(t); };
+    });
+    return;
+  }
+  var t  = S.newTkt;
+  var isPM = t.type === 'PM';
+  var steps = isPM ? ['Site','Job Details','PM Checklist','Materials & Photos','Sign-off']
+                   : ['Site','Job Details','Materials & Photos','Sign-off'];
+  var stepsHtml = '';
+  steps.forEach(function(n, i) {
+    var state = S.tktStep===i+1?'active':S.tktStep>i+1?'done':'pend';
+    stepsHtml += '<div class="step '+state+'"><div class="step-b '+state+'"></div><span>'+n.toUpperCase()+'</span></div>';
+  });
+
+  var html = '<div class="fade">';
+  html += '<div style="display:flex;align-items:center;gap:.6rem;margin-bottom:1rem">';
+  html += '<span class="badge '+svcBadge(t.type)+'">'+t.type+'</span>';
+  html += '<span style="font-size:.68rem;color:var(--muted)">TICKET #'+t.ticketNo+'</span>';
+  if (t.gps) html += '<span style="font-size:.58rem;color:var(--green)">GPS ✓</span>';
+  html += '</div><div class="steps">'+stepsHtml+'</div><div id="step-wrap"></div></div>';
+  c.innerHTML = html;
+
+  var sw = document.getElementById('step-wrap');
+  if      (S.tktStep===1)            renderTktSite(sw);
+  else if (S.tktStep===2)            renderTktJob(sw);
+  else if (S.tktStep===3 && isPM)    renderTktChecklist(sw);
+  else if (S.tktStep===(isPM?4:3))   renderTktMaterials(sw);
+  else                               renderTktSignoff(sw);
+}
+
+function renderTktSite(sw) {
+  var t = S.newTkt, srch = S._siteSearch||'';
+  var filtered = S.sites.filter(function(s){
+    return s.name.toLowerCase().indexOf(srch.toLowerCase())>=0 || s.customer.toLowerCase().indexOf(srch.toLowerCase())>=0;
+  });
+
+  var svcOpts = ['PM','SVC','INS','DEC','PRJ'].map(function(tp) {
+    return '<option value="'+tp+'"'+(t.type===tp?' selected':'')+'>'
+      +tp+' — '+{PM:'Preventive Maintenance',SVC:'Service Call',INS:'Install',DEC:'Decommission',PRJ:'Project'}[tp]+'</option>';
+  }).join('');
+
+  var siteRows = '';
+  filtered.forEach(function(s) {
+    var ps = pmStat(s);
+    siteRows += '<div class="sr'+(t.siteId===s.id?' sel':'')+'" data-sid="'+s.id+'" data-sname="'+s.name+'" data-scust="'+s.customer+'">'
+      + '<div><div class="sn" style="font-size:.82rem">'+s.name+'</div>'
+      + '<div style="font-size:.6rem;color:var(--muted)">'+s.customer+(s.pm?'':' · NO PM')+'</div></div>'
+      + (s.pm&&s.lastPM ? '<span class="badge '+ps.cls+'" style="font-size:.52rem">'+ps.label+'</span>' : '')
+      + '</div>';
+  });
+
+  var html = '<label class="fl">SERVICE TYPE</label>'
+    + '<select class="fi" id="svc-sel">'+svcOpts+'</select>'
+    + '<label class="fl">SELECT SITE</label>'
+    + '<input class="fi" id="site-srch" value="'+srch+'" placeholder="Search site or customer…" style="margin-bottom:.4rem">'
+    + '<div style="max-height:240px;overflow-y:auto;border:1px solid var(--border);border-radius:8px" id="site-list">'+siteRows+'</div>'
+    + '<label class="fl">CONTRACT #</label><input class="fi" id="inp-contract" value="'+t.contractNo+'" placeholder="Contract number">'
+    + '<label class="fl">CASE / TICKET ID</label><input class="fi" id="inp-case" value="'+t.caseId+'" placeholder="Case reference">'
+    + '<button class="bp" style="margin-top:1rem" id="step1-next" '+((!t.siteId)?'disabled':'')+'>NEXT</button>';
+  sw.innerHTML = html;
+
+  document.getElementById('svc-sel').onchange = function() { S.newTkt.type = this.value; renderTab(); };
+  document.getElementById('site-srch').oninput = function() { S._siteSearch = this.value; renderTktSite(sw); };
+  document.getElementById('inp-contract').oninput = function() { S.newTkt.contractNo = this.value; };
+  document.getElementById('inp-case').oninput     = function() { S.newTkt.caseId = this.value; };
+  document.getElementById('site-list').onclick = function(e) {
+    var row = e.target.closest('[data-sid]');
+    if (!row) return;
+    S.newTkt.siteId   = row.dataset.sid;
+    S.newTkt.siteName = row.dataset.sname;
+    S.newTkt.customer = row.dataset.scust;
+    S.newTkt.rigNo    = row.dataset.sname;
+    renderTktSite(sw);
+  };
+  document.getElementById('step1-next').onclick = function() { S.tktStep = 2; renderTab(); };
+}
+
+function renderTktJob(sw) {
+  var t = S.newTkt;
+  var hrs = t.startTime && t.stopTime ? calcHours(t.startTime, t.stopTime) : '';
+  var html = '<p style="font-size:.68rem;color:var(--muted);margin-bottom:.75rem">'+t.siteName+' · '+t.customer+'</p>'
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">'
+    + '<div><label class="fl" style="margin-top:0">DATE</label><input type="date" class="fi" id="inp-date" value="'+t.date+'"></div>'
+    + '<div><label class="fl" style="margin-top:0">RIG / SITE No.</label><input class="fi" id="inp-rig" value="'+t.rigNo+'" placeholder="e.g. 303"></div>'
+    + '</div>'
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">'
+    + '<div><label class="fl">START TIME</label><input type="time" class="fi" id="inp-start" value="'+t.startTime+'"></div>'
+    + '<div><label class="fl">STOP TIME</label><input type="time" class="fi" id="inp-stop" value="'+(t.stopTime||'')+'"></div>'
+    + '</div>'
+    + (hrs ? '<p style="font-size:.65rem;color:var(--green);margin-top:.3rem">Hours on site: '+hrs+'</p>' : '')
+    + '<label class="fl">SERVICE DESCRIPTION / WORK DONE</label>'
+    + '<textarea class="fi" id="inp-desc" placeholder="Describe the work performed…">'+t.desc+'</textarea>'
+    + (t.type==='SVC' ? '<label class="fl">RIGHT FIRST TIME (RFT)?</label>'
+       + '<div class="rft-row">'
+       + '<button class="rft-btn yes'+(t.rft?' on':'')+'" id="rft-y">YES</button>'
+       + '<button class="rft-btn no'+(!t.rft?' on':'')+'" id="rft-n">NO</button>'
+       + '</div>' : '')
+    + '<div class="br">'
+    + '<button class="bs" style="flex:1" id="job-back">BACK</button>'
+    + '<button class="bp" style="flex:2" id="job-next">NEXT</button></div>';
+  sw.innerHTML = html;
+
+  document.getElementById('inp-date').oninput  = function() { S.newTkt.date = this.value; };
+  document.getElementById('inp-rig').oninput   = function() { S.newTkt.rigNo = this.value; };
+  document.getElementById('inp-start').oninput = function() { S.newTkt.startTime = this.value; renderTktJob(sw); };
+  document.getElementById('inp-stop').oninput  = function() { S.newTkt.stopTime = this.value; renderTktJob(sw); };
+  document.getElementById('inp-desc').oninput  = function() { S.newTkt.desc = this.value; };
+  if (t.type==='SVC') {
+    document.getElementById('rft-y').onclick = function() { S.newTkt.rft = true;  renderTktJob(sw); };
+    document.getElementById('rft-n').onclick = function() { S.newTkt.rft = false; renderTktJob(sw); };
+  }
+  document.getElementById('job-back').onclick = function() { S.tktStep = 1; renderTab(); };
+  document.getElementById('job-next').onclick = function() {
+    S.newTkt.desc = document.getElementById('inp-desc').value;
+    if (!S.newTkt.desc.trim()) { toast('Enter a description','var(--yellow)'); return; }
+    S.tktStep = 3; renderTab();
+  };
+}
+
+function renderTktChecklist(sw) {
+  var t = S.newTkt;
+  var done = CHECKLIST.filter(function(c){return t.checklist[c.id]===true||t.checklist[c.id]==='na';}).length;
+  var pct  = Math.round(done/CHECKLIST.length*100);
+
+  var rows = '';
+  CHECKLIST.forEach(function(ci) {
+    var v   = t.checklist[ci.id];
+    var cls = v===true?'on':v==='na'?'na':'off';
+    rows += '<div class="ci">'
+      + '<div class="cb '+cls+'" data-chk="'+ci.id+'"></div>'
+      + '<div style="flex:1"><span class="cl '+cls+'">'+ci.text+'</span>'
+      + (ci.id==='c14' ? renderVSAT(t) : '')
+      + '</div>'
+      + '<button class="icon-btn" data-na="'+ci.id+'" style="font-size:.5rem;padding:.15rem .35rem">N/A</button>'
+      + '</div>';
+  });
+
+  var html = '<p style="font-size:.68rem;color:var(--muted);margin-bottom:.35rem">'+t.siteName+'</p>'
+    + '<div style="display:flex;justify-content:space-between;margin-bottom:.25rem">'
+    + '<span style="font-size:.6rem;color:'+(pct===100?'var(--green)':'var(--muted)')+'">'+done+'/'+CHECKLIST.length+' — '+pct+'%</span></div>'
+    + '<div class="pm-bar"><div class="pm-bar-fill" style="width:'+pct+'%"></div></div>'
+    + '<p style="font-size:.57rem;color:var(--muted);margin-bottom:.75rem">Tap to mark YES · N/A for not applicable</p>'
+    + rows
+    + '<label class="fl">OVERALL PM RESULT — VSAT terminal running OK?</label>'
+    + '<div class="rft-row">'
+    + '<button class="rft-btn yes'+(t.pmOK===true?' on':'')+'" id="pm-ok-y">YES</button>'
+    + '<button class="rft-btn no'+(t.pmOK===false?' on':'')+'" id="pm-ok-n">NO</button>'
+    + '</div>'
+    + '<div class="br" style="margin-top:1rem">'
+    + '<button class="bs" style="flex:1" id="chk-back">BACK</button>'
+    + '<button class="bp" style="flex:2" id="chk-next" '+(pct<100||t.pmOK===null?'disabled':'')+'>NEXT</button></div>';
+  sw.innerHTML = html;
+
+  // Use sw.onclick (not addEventListener) so it replaces on each re-render — no stacking
+  sw.onclick = function(e) {
+    var chk = e.target.closest('[data-chk]');
+    if (chk) {
+      var cid = chk.dataset.chk;
+      S.newTkt.checklist[cid] = S.newTkt.checklist[cid]===true ? false : true;
+      renderTktChecklist(sw); return;
+    }
+    var na = e.target.closest('[data-na]');
+    if (na) {
+      var nid = na.dataset.na;
+      S.newTkt.checklist[nid] = S.newTkt.checklist[nid]==='na' ? false : 'na';
+      renderTktChecklist(sw); return;
+    }
+    var back = e.target.closest('#chk-back');
+    if (back) { sw.onclick = null; S.tktStep = 2; renderTab(); return; }
+    var next = e.target.closest('#chk-next');
+    if (next) { sw.onclick = null; S.tktStep = 4; renderTab(); return; }
+    var pmy = e.target.closest('#pm-ok-y');
+    if (pmy) { S.newTkt.pmOK = true;  renderTktChecklist(sw); return; }
+    var pmn = e.target.closest('#pm-ok-n');
+    if (pmn) { S.newTkt.pmOK = false; renderTktChecklist(sw); return; }
+  };
+
+  // VSAT inputs
+  Object.keys(S.newTkt.vsat).forEach(function(k) {
+    var el = document.getElementById('vsat-'+k);
+    if (el) el.oninput = function() { S.newTkt.vsat[k] = this.value; };
+  });
+}
+
+function renderVSAT(t) {
+  var fields = [
+    ['ethernetStatus','Ethernet Status'],['satelliteBeamId','Satellite Beam ID'],
+    ['autoBeamSelection','Auto Beam Selection'],['modemStatus','Modem Status'],
+    ['demodulator','Demodulator'],['actualReceivePL','Actual Receive PL'],
+    ['softwareVersion','Software Version'],['mrcTxPower','MRC Tx Power'],
+    ['frameErrorRatio','Frame Error Ratio'],['cwFrameErrorRatio','CW Frame Error Ratio'],
+    ['esno','EsNo']
+  ];
+  var html = '<div class="vsat-grid" style="margin-top:.5rem">';
+  fields.forEach(function(f) {
+    html += '<div class="vsat-f"><label>'+f[1]+'</label>'
+      + '<input id="vsat-'+f[0]+'" value="'+(t.vsat[f[0]]||'')+'" placeholder="—"></div>';
+  });
+  return html + '</div>';
+}
+
+function renderTktMaterials(sw) {
+  var t = S.newTkt;
+  if (!t.materials || !t.materials.length) t.materials = [{qty:'',desc:'',serial:''}];
+
+  var matRows = '';
+  t.materials.forEach(function(m, i) {
+    matRows += '<div style="display:grid;grid-template-columns:40px 1fr 1fr 28px;gap:.3rem;align-items:center;margin-bottom:.3rem">'
+      + '<input class="fi" data-mat-qty="'+i+'" value="'+m.qty+'" placeholder="1" style="padding:.5rem .5rem;font-size:.75rem">'
+      + '<input class="fi" data-mat-desc="'+i+'" value="'+m.desc+'" placeholder="Part / description" style="padding:.5rem .6rem;font-size:.75rem">'
+      + '<input class="fi" data-mat-srl="'+i+'" value="'+m.serial+'" placeholder="S/N or asset tag" style="padding:.5rem .6rem;font-size:.75rem">'
+      + '<button data-mat-del="'+i+'" style="background:none;border:1px solid var(--border);border-radius:5px;color:var(--red);cursor:pointer;font-size:.8rem;padding:.3rem">✕</button>'
+      + '</div>';
+  });
+
+  var photoSlots = '';
+  t.photos.forEach(function(p, i) {
+    photoSlots += '<div class="photo-slot"><img src="'+p+'">'
+      + '<button class="photo-del" data-photo-del="'+i+'">✕</button></div>';
+  });
+  if (t.photos.length < 9) {
+    photoSlots += '<div class="photo-slot" id="add-photo-btn"><div class="photo-add-ico">📷</div><div class="photo-add-lbl">ADD PHOTO</div></div>';
+  }
+
+  var isPM   = t.type==='PM';
+  var prevStep = isPM ? 3 : 2;
+  var nextStep = isPM ? 5 : 4;
+
+  var html = '<div class="card"><div class="card-title">MATERIALS / PARTS USED</div>'
+    + '<div style="display:grid;grid-template-columns:40px 1fr 1fr 28px;gap:.3rem;margin-bottom:.3rem">'
+    + '<span style="font-size:.55rem;color:var(--muted)">QTY</span>'
+    + '<span style="font-size:.55rem;color:var(--muted)">DESCRIPTION</span>'
+    + '<span style="font-size:.55rem;color:var(--muted)">SERIAL / ASSET</span>'
+    + '<span></span></div>'
+    + '<div id="mat-rows">'+matRows+'</div>'
+    + (t.materials.length<6?'<button class="bs" style="font-size:.72rem;padding:.5rem" id="add-mat-btn">+ ADD ROW</button>':'')
+    + '</div>'
+    + '<div class="card"><div class="card-title">TRAVEL DETAILS</div>'
+    + '<label class="fl" style="margin-top:0">VEHICLE ID</label><input class="fi" id="inp-veh" value="'+t.vehicleId+'" placeholder="Vehicle plate or ID">'
+    + '<label class="fl">ROUND TRIP MILEAGE</label><input class="fi" id="inp-mile" value="'+t.mileage+'" placeholder="e.g. 120 km">'
+    + '<label class="fl">TRAVEL TO AND FROM</label><input class="fi" id="inp-travel" value="'+t.travel+'" placeholder="Muscat → Rig 303 → Muscat">'
+    + '</div>'
+    + '<div class="card"><div class="card-title">PHOTOS '+(isPM?'(REQUIRED)':'(OPTIONAL)')+'</div>'
+    + '<p style="font-size:.65rem;color:var(--muted);margin-bottom:.6rem">'+(isPM?'TX/RX cables, Motor/Sensor, BUC/LNB serial numbers, Antenna, IDU cabinet':'Before/after photos of work area')+'</p>'
+    + '<div class="photo-grid">'+photoSlots+'</div></div>'
+    + '<div class="br">'
+    + '<button class="bs" style="flex:1" id="mat-back">BACK</button>'
+    + '<button class="bp" style="flex:2" id="mat-next">NEXT</button></div>';
+  sw.innerHTML = html;
+
+  // Material inputs
+  sw.querySelectorAll('[data-mat-qty]').forEach(function(el) {
+    el.oninput = function() { S.newTkt.materials[el.dataset.matQty].qty = this.value; };
+  });
+  sw.querySelectorAll('[data-mat-desc]').forEach(function(el) {
+    el.oninput = function() { S.newTkt.materials[el.dataset.matDesc].desc = this.value; };
+  });
+  sw.querySelectorAll('[data-mat-srl]').forEach(function(el) {
+    el.oninput = function() { S.newTkt.materials[el.dataset.matSrl].serial = this.value; };
+  });
+  sw.querySelectorAll('[data-mat-del]').forEach(function(el) {
+    el.onclick = function() { S.newTkt.materials.splice(parseInt(el.dataset.matDel), 1); renderTktMaterials(sw); };
+  });
+  var addMatBtn = document.getElementById('add-mat-btn');
+  if (addMatBtn) addMatBtn.onclick = function() { S.newTkt.materials.push({qty:'',desc:'',serial:''}); renderTktMaterials(sw); };
+
+  // Photo delete
+  sw.querySelectorAll('[data-photo-del]').forEach(function(el) {
+    el.onclick = function(e) { e.stopPropagation(); S.newTkt.photos.splice(parseInt(el.dataset.photoDel),1); renderTktMaterials(sw); };
+  });
+  var addPhotoBtn = document.getElementById('add-photo-btn');
+  if (addPhotoBtn) addPhotoBtn.onclick = function() { triggerPhoto(); };
+
+  document.getElementById('inp-veh').oninput    = function() { S.newTkt.vehicleId = this.value; };
+  document.getElementById('inp-mile').oninput   = function() { S.newTkt.mileage   = this.value; };
+  document.getElementById('inp-travel').oninput = function() { S.newTkt.travel    = this.value; };
+  document.getElementById('mat-back').onclick   = function() { S.tktStep = prevStep; renderTab(); };
+  document.getElementById('mat-next').onclick   = function() { S.tktStep = nextStep; renderTab(); };
+}
+
+function renderTktSignoff(sw) {
+  var t   = S.newTkt;
+  var hrs = t.startTime && t.stopTime ? calcHours(t.startTime, t.stopTime) : '—';
+  var matUsed = t.materials.filter(function(m){return m.desc;}).length;
+  var isPM    = t.type==='PM';
+
+  var summaryRows = dr('Ticket','#'+t.ticketNo)+dr('Type',t.type)+dr('Site',t.siteName)
+    +dr('Customer',t.customer)+dr('Engineer',t.engName)+dr('Date',fmtDate(t.date))
+    +dr('Time',t.startTime+' – '+(t.stopTime||'—')+' ('+hrs+')')
+    +(t.contractNo?dr('Contract',t.contractNo):'')
+    +(t.caseId?dr('Case ID',t.caseId):'')
+    +dr('Description',t.desc||'—')
+    +(isPM&&t.pmOK!==null?dr('PM Result',t.pmOK?'VSAT OK':'Issues Found'):'')
+    +(t.type==='SVC'?dr('RFT',t.rft?'YES':'NO'):'')
+    +(matUsed?dr('Materials',matUsed+' item'+(matUsed>1?'s':'')+' listed'):'')
+    +(t.gps?dr('GPS',t.gps.lat+', '+t.gps.lng):'')
+    +dr('Photos',t.photos.length+' attached');
+
+  var clientSigHtml = t.clientSig
+    ? '<p style="font-size:.6rem;color:var(--green);margin-top:.5rem">SIGNATURE CAPTURED</p>'
+      + '<img src="'+t.clientSig+'" style="width:100%;border-radius:6px;background:#050709;border:1px solid var(--border);margin-top:.3rem">'
+      + '<button id="resign-client" style="background:none;border:none;color:var(--orange);font-size:.68rem;cursor:pointer;margin-top:.3rem;font-family:var(--font)">Re-sign</button>'
+    : '<button class="bs" style="margin-top:.65rem;border-color:var(--orange);color:var(--orange)" id="get-client-sig">GET CLIENT SIGNATURE</button>';
+
+  var engSigHtml = t.engSig
+    ? '<p style="font-size:.6rem;color:var(--green);margin-top:.4rem">ENGINEER SIGNATURE CAPTURED</p>'
+      + '<img src="'+t.engSig+'" style="width:100%;border-radius:6px;background:#050709;border:1px solid var(--border);margin-top:.3rem">'
+      + '<button id="resign-eng" style="background:none;border:none;color:var(--orange);font-size:.68rem;cursor:pointer;margin-top:.3rem;font-family:var(--font)">Re-sign</button>'
+    : '<button class="bs" style="margin-top:.4rem;border-color:var(--green);color:var(--green)" id="get-eng-sig">ENGINEER SIGN</button>';
+
+  var submitBtn = (t.clientSig && t.engSig)
+    ? '<button class="bp" id="submit-tkt" '+(t.clientName?'':'disabled')+'>SUBMIT & GET PDF'+(isPM?' (2 DOCS)':'')+'</button>'
+    : '';
+
+  var html = '<p style="font-size:.68rem;color:var(--orange);letter-spacing:.08em;margin-bottom:.75rem">REVIEW & SIGN-OFF</p>'
+    + '<div class="card"><div class="card-title">TICKET SUMMARY</div>'+summaryRows+'</div>'
+    + '<div class="card"><div class="card-title">DSV / OIM / TP — AUTHORISED CUSTOMER REPRESENTATIVE</div>'
+    + '<label class="fl" style="margin-top:0">PRINT NAME & TITLE</label>'
+    + '<input class="fi" id="inp-cname" value="'+t.clientName+'" placeholder="Rig Incharge name and title">'
+    + clientSigHtml+'</div>'
+    + (t.clientSig ? '<div class="card"><div class="card-title">VIASAT FIELD ENGINEER</div>'
+      + '<p style="font-size:.72rem;color:var(--text);margin-bottom:.4rem">'+t.engName+'</p>'
+      + engSigHtml+'</div>' : '')
+    + submitBtn
+    + '<div class="br" style="margin-top:.5rem"><button class="bs" id="sign-back">BACK</button></div>';
+  sw.innerHTML = html;
+
+  document.getElementById('inp-cname').oninput = function() { S.newTkt.clientName = this.value; };
+  var gcSig = document.getElementById('get-client-sig');
+  if (gcSig) gcSig.onclick = function() { openSig('client'); };
+  var reSigC = document.getElementById('resign-client');
+  if (reSigC) reSigC.onclick = function() { S.newTkt.clientSig=''; renderTab(); };
+  var geSig = document.getElementById('get-eng-sig');
+  if (geSig) geSig.onclick = function() { openSig('eng'); };
+  var reSigE = document.getElementById('resign-eng');
+  if (reSigE) reSigE.onclick = function() { S.newTkt.engSig=''; renderTab(); };
+  var subBtn = document.getElementById('submit-tkt');
+  if (subBtn) subBtn.onclick = function() { submitTkt(); };
+  document.getElementById('sign-back').onclick = function() { S.tktStep = isPM?4:3; renderTab(); };
+}
+
+function submitTkt() {
+  var t = S.newTkt;
+  t.clientName = document.getElementById('inp-cname') ? document.getElementById('inp-cname').value : t.clientName;
+  if (!t.clientName || !t.clientSig || !t.engSig) { toast('Complete sign-off first','var(--red)'); return; }
+  t.status = 'submitted';
+  t.submittedAt = new Date().toISOString();
+  S.nextTicket++;
+  S.tickets.unshift(t);
+  if (t.type==='PM' && t.siteId) {
+    S.sites = S.sites.map(function(s){return s.id===t.siteId ? Object.assign({},s,{lastPM:t.date}) : s;});
+  }
+  saveLocal();
+  saveToOD();
+  // Append new row to Excel in OneDrive
+  var saved = t;
+  sendToWebhook(saved);
+  // Update PM schedule sheet if PM job
+
+  S.newTkt = null;
+  var c = document.getElementById('content');
+  var html = '<div class="success fade"><div class="ico">✅</div>'
+    + '<h2 style="color:var(--green)">TICKET SUBMITTED</h2>'
+    + '<p style="margin-bottom:.3rem">Ticket #'+saved.ticketNo+' · '+saved.siteName+'</p>'
+    + '<p style="font-size:.68rem;color:var(--muted);margin-bottom:1.5rem">'+(S.odToken?'Synced to OneDrive':'Saved locally')+'</p>'
+    + '<button class="bp" style="margin-bottom:.6rem" id="pdf-ft">FIELD TICKET PDF</button>'
+    + (saved.type==='PM'?'<button class="bp" style="background:var(--blue);margin-bottom:.6rem" id="pdf-pm">PM CHECKLIST PDF</button>':'')
+    + '<button class="bs" id="back-dash">BACK TO DASHBOARD</button></div>';
+  c.innerHTML = html;
+  document.getElementById('pdf-ft').onclick    = function() { openPrintWindow(fieldTicketHTML(saved), 'FIELD TICKET #'+saved.ticketNo); };
+  if (saved.type==='PM') {
+    document.getElementById('pdf-pm').onclick  = function() { openPrintWindow(pmChecklistHTML(saved), 'PM CHECKLIST #'+saved.ticketNo); };
+  }
+  document.getElementById('back-dash').onclick = function() { go('dash'); };
+}
+
+// ── PM SCHEDULE ────────────────────────────────
+function renderSchedule(c) {
+  var pmSites  = S.sites.filter(function(s){return s.pm;});
+  var enriched = pmSites.map(function(s){return Object.assign({},s,pmStat(s));});
+  var customers= ['All'];
+  pmSites.forEach(function(s){if(customers.indexOf(s.customer)<0)customers.push(s.customer);});
+
+  var filt  = S.siteFilter || 'All';
+  var srch  = S.siteSearch || '';
+  var shown = enriched.filter(function(s){
+    return (filt==='All'||s.customer===filt) && s.name.toLowerCase().indexOf(srch.toLowerCase())>=0;
+  }).sort(function(a,b){return (a.days===null?9999:a.days)-(b.days===null?9999:b.days);});
+
+  var od = enriched.filter(function(s){return s.days!==null&&s.days<0;}).length;
+  var ds = enriched.filter(function(s){return s.days!==null&&s.days>=0&&s.days<=14;}).length;
+  var dm = enriched.filter(function(s){return s.days!==null&&s.days>=0&&s.days<=30;}).length;
+
+  var tagHtml = '';
+  customers.forEach(function(cu) {
+    tagHtml += '<button class="tag'+(filt===cu?' on':'')+'" data-cust="'+cu+'">'+cu+'</button>';
+  });
+
+  var siteCards = '';
+  shown.forEach(function(s) {
+    var pmCnt  = S.tickets.filter(function(t){return t.siteId===s.id&&t.type==='PM';}).length;
+    var svcCnt = S.tickets.filter(function(t){return t.siteId===s.id&&t.type==='SVC';}).length;
+    siteCards += '<div class="card" style="padding:.8rem .9rem;margin-bottom:.5rem">'
+      + '<div style="display:flex;justify-content:space-between;align-items:flex-start">'
+      + '<div style="flex:1"><div style="font-size:.82rem;color:var(--text);margin-bottom:.2rem">'+s.name+'</div>'
+      + '<div style="font-size:.6rem;color:var(--muted)">'+s.customer+' · Last PM: '+fmtDate(s.lastPM)+' · '+pmCnt+' PMs · '+svcCnt+' SVC</div>'
+      + '<div style="font-size:.6rem;color:var(--muted);margin-top:.1rem">Next Due: '+fmtDate(s.due)+'</div></div>'
+      + '<div style="text-align:right;flex-shrink:0;margin-left:.5rem">'
+      + '<span class="badge '+s.cls+'">'+s.label+'</span>'
+      + '<div style="margin-top:.4rem"><button class="icon-btn" style="border-color:var(--orange);color:var(--orange)" data-start-pm="'+s.id+'" data-start-name="'+s.name+'" data-start-cust="'+s.customer+'">START PM</button></div>'
+      + '</div></div></div>';
+  });
+
+  var html = '<div class="fade">'
+    + '<p style="font-size:.58rem;color:var(--muted);letter-spacing:.1em;margin-bottom:.75rem">'+pmSites.length+' SITES ON 5-MONTH PM CYCLE</p>'
+    + '<div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:.75rem">'
+    + '<div class="kpi"><div class="kpi-l">OVERDUE</div><div class="kpi-v" style="color:var(--red);font-size:1.6rem">'+od+'</div></div>'
+    + '<div class="kpi"><div class="kpi-l">DUE ≤14d</div><div class="kpi-v" style="color:var(--yellow);font-size:1.6rem">'+ds+'</div></div>'
+    + '<div class="kpi"><div class="kpi-l">DUE ≤30d</div><div class="kpi-v" style="color:#fb923c;font-size:1.6rem">'+dm+'</div></div>'
+    + '</div>'
+    + '<input class="fi" id="sch-srch" value="'+srch+'" placeholder="Search sites…" style="margin-bottom:.6rem">'
+    + '<div class="tags" id="cust-tags">'+tagHtml+'</div>'
+    + siteCards+'</div>';
+  c.innerHTML = html;
+
+  document.getElementById('sch-srch').oninput = function() { S.siteSearch = this.value; renderSchedule(c); };
+  document.getElementById('cust-tags').onclick = function(e) {
+    var btn = e.target.closest('[data-cust]');
+    if (btn) { S.siteFilter = btn.dataset.cust; renderSchedule(c); }
+  };
+  c.addEventListener('click', function(e) {
+    var btn = e.target.closest('[data-start-pm]');
+    if (btn) {
+      startTkt('PM');
+      S.newTkt.siteId   = btn.dataset.startPm;
+      S.newTkt.siteName = btn.dataset.startName;
+      S.newTkt.customer = btn.dataset.startCust;
+      S.newTkt.rigNo    = btn.dataset.startName;
+      go('ticket');
+    }
+  });
+}
+
+// ── RECORDS ────────────────────────────────────
+function renderRecords(c) {
+  var isAdmin = S.user.role === 'admin';
+  var list = isAdmin ? S.tickets.slice() : S.tickets.filter(function(t){return t.engId===S.user.id;});
+  list.sort(function(a,b){return new Date(b.createdAt)-new Date(a.createdAt);});
+  var srch = (S.recSearch||'').toLowerCase();
+  if (srch) list = list.filter(function(t){
+    return (t.siteName||'').toLowerCase().indexOf(srch)>=0
+        || (t.ticketNo||'').indexOf(srch)>=0
+        || (t.engName||'').toLowerCase().indexOf(srch)>=0;
+  });
+  var filt = S.recFilter || 'all';
+  if (filt !== 'all') {
+    list = list.filter(function(t){ return filt==='pending' ? t.status==='submitted' : t.type===filt; });
+  }
+
+  var pendingCount = S.tickets.filter(function(t){return t.status==='submitted';}).length;
+  var tagHtml = '';
+  var tagDefs = [
+    {f:'all',     lbl:'ALL ('+S.tickets.length+')'},
+    {f:'PM',      lbl:'PM'},
+    {f:'SVC',     lbl:'SVC'},
+    {f:'INS',     lbl:'INS'},
+    {f:'DEC',     lbl:'DEC'},
+    {f:'PRJ',     lbl:'PRJ'},
+    {f:'pending', lbl:'PENDING ('+pendingCount+')'}
+  ];
+  tagDefs.forEach(function(td) {
+    tagHtml += '<button class="tag'+(filt===td.f?' on':'')+'" data-filt="'+td.f+'">'+td.lbl+'</button>';
+  });
+
+  var cards = '';
+  list.forEach(function(t) {
+    var isExp = S.expRec === t.id;
+    var rftBadge = t.type==='SVC' ? '<span class="badge '+(t.rft?'b-rft-y':'b-rft-n')+'">RFT '+(t.rft?'✓':'✗')+'</span>' : '';
+    var body = '';
+    if (isExp) {
+      var rows = dr('Ticket','#'+t.ticketNo)+dr('Type',t.type)+dr('Customer',t.customer||'—')
+               + dr('Date',fmtDate(t.date))+dr('Time',(t.startTime||'—')+' – '+(t.stopTime||'—'));
+      if (t.contractNo) rows += dr('Contract',t.contractNo);
+      if (t.desc)       rows += dr('Work Done',t.desc);
+      if (t.type==='PM'&&t.pmOK!==null) rows += dr('PM Result', t.pmOK?'VSAT OK':'Issues Found');
+      if (t.gps)        rows += dr('GPS',t.gps.lat+', '+t.gps.lng);
+      var photos = '';
+      if (t.photos && t.photos.length) {
+        var thumbs = t.photos.map(function(p){return '<div class="photo-slot" style="width:70px;height:60px"><img src="'+p+'"></div>';}).join('');
+        photos = '<div style="margin:.5rem 0"><p style="font-size:.6rem;color:var(--muted);margin-bottom:.35rem">PHOTOS ('+t.photos.length+')</p><div style="display:flex;flex-wrap:wrap;gap:.4rem">'+thumbs+'</div></div>';
+      }
+      var sigHtml = t.clientSig ? '<div style="margin-top:.5rem"><p style="font-size:.6rem;color:var(--muted);margin-bottom:.25rem">CLIENT SIGNATURE — '+(t.clientName||'—')+'</p><img src="'+t.clientSig+'" style="width:100%;border-radius:5px;background:#050709;border:1px solid var(--border)"></div>' : '';
+      var btns = '<button class="icon-btn" data-act="ft" data-tid="'+t.id+'">Field Ticket PDF</button>';
+      if (t.type==='PM')                             btns += ' <button class="icon-btn" data-act="pm" data-tid="'+t.id+'">PM Checklist PDF</button>';
+      if (isAdmin && t.type==='SVC')                 btns += ' <button class="icon-btn" style="border-color:var(--yellow);color:var(--yellow)" data-act="editrft" data-tid="'+t.id+'">Edit RFT: '+(t.rft?'YES':'NO')+'</button>';
+      if (isAdmin && t.status==='submitted')         btns += ' <button class="icon-btn" style="border-color:var(--green);color:var(--green)" data-act="approve" data-tid="'+t.id+'">Approve</button>';
+      body = '<div class="rec-bd">'+rows+photos+sigHtml
+           + '<div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.75rem">'+btns+'</div></div>';
+    }
+    cards += '<div class="rec">'
+      + '<div class="rec-hd" data-tog="'+t.id+'">'
+      + '<div><div style="display:flex;gap:.35rem;align-items:center;margin-bottom:.3rem;flex-wrap:wrap">'
+      + '<span class="badge '+svcBadge(t.type)+'">'+t.type+'</span>'
+      + rftBadge
+      + '<span class="badge '+statBadge(t.status)+'">'+t.status.toUpperCase()+'</span>'
+      + '<span style="font-size:.58rem;color:var(--muted)">#'+t.ticketNo+'</span></div>'
+      + '<div style="font-size:.8rem;color:var(--text)">'+t.siteName+'</div>'
+      + '<div style="font-size:.6rem;color:var(--muted)">'+t.engName+' · '+fmtDate(t.date)+'</div>'
+      + '</div><span style="color:var(--muted);font-size:.8rem">'+(isExp?'▲':'▼')+'</span></div>'
+      + body+'</div>';
+  });
+
+  var html = '<div class="fade">'
+    + '<input class="fi" id="rec-srch" value="'+(S.recSearch||'')+'" placeholder="Search site, ticket #, engineer…" style="margin-bottom:.6rem">'
+    + '<div class="tags" id="rec-tags">'+tagHtml+'</div>'
+    + (list.length===0?'<p style="text-align:center;color:var(--muted);padding:3rem;font-size:.8rem">No records found</p>':cards)
+    + '</div>';
+  c.innerHTML = html;
+
+  document.getElementById('rec-srch').addEventListener('input', function(){ S.recSearch=this.value; renderRecords(c); });
+  document.getElementById('rec-tags').addEventListener('click', function(e){
+    var btn=e.target.closest('[data-filt]');
+    if(btn){ S.recFilter=btn.dataset.filt; S.expRec=null; renderRecords(c); }
+  });
+  c.addEventListener('click', function(e) {
+    var tog = e.target.closest('[data-tog]');
+    if (tog) { S.expRec = S.expRec===tog.dataset.tog ? null : tog.dataset.tog; renderRecords(c); return; }
+    var act = e.target.closest('[data-act]');
+    if (act) {
+      var tkt = S.tickets.find(function(t){return t.id===act.dataset.tid;});
+      if (!tkt) return;
+      if      (act.dataset.act==='ft')      openPrintWindow(fieldTicketHTML(tkt), 'FIELD TICKET #'+tkt.ticketNo);
+      else if (act.dataset.act==='pm')      openPrintWindow(pmChecklistHTML(tkt),  'PM CHECKLIST #'+tkt.ticketNo);
+      else if (act.dataset.act==='approve') approveTicket(act.dataset.tid);
+      else if (act.dataset.act==='editrft') editRFT(act.dataset.tid);
+    }
+  });
+}
+
+function approveTicket(id) {
+  var t = S.tickets.find(function(t){return t.id===id;});
+  if (!t) return;
+  t.status = 'approved'; t.reviewedBy = S.user.name; t.approvedBy = S.user.name; t.approvedAt = new Date().toISOString();
+  saveLocal(); saveToOD(); toast('Ticket approved'); renderTab();
+}
+
+function editRFT(id) {
+  var t = S.tickets.find(function(t){return t.id===id;});
+  if (!t) return;
+  var current = t.rft ? 'YES' : 'NO';
+  var next    = t.rft ? 'NO'  : 'YES';
+  showConfirm('Edit RFT', '✏️', 'Current RFT: ' + current + '. Change to ' + next + '?', function() {
+    t.rft = !t.rft;
+    t.rftEditedBy = S.user.name;
+    t.rftEditedAt = new Date().toISOString();
+    saveLocal(); saveToOD();
+    toast('RFT updated to ' + (t.rft ? 'YES' : 'NO'));
+    renderTab();
+  });
+}
+
+// ── ADMIN ──────────────────────────────────────
+function renderAdmin(c) {
+  if (S.user.role !== 'admin') { c.innerHTML='<p style="color:var(--red);padding:2rem;text-align:center">Access denied</p>'; return; }
+  var engRows = '';
+  S.engineers.filter(function(e){return e.role==='engineer';}).forEach(function(e) {
+    engRows += '<div class="eng-row">'
+      + '<div style="display:flex;align-items:center;gap:.6rem">'
+      + '<div class="eng-avatar" style="width:32px;height:32px;border-radius:50%;background:'+e.color+'22;color:'+e.color+';display:flex;align-items:center;justify-content:center;font-family:var(--head);font-size:.85rem;font-weight:700">'+initials(e.name)+'</div>'
+      + '<div><div style="font-size:.8rem;color:'+(e.active?'var(--text)':'var(--muted)')+'">'+e.name+'</div>'
+      + '<div style="font-size:.58rem;color:var(--muted)">'+(e.active?'ACTIVE':'INACTIVE')+'</div></div></div>'
+      + '<div style="display:flex;gap:.4rem">'
+      + '<button class="icon-btn" data-toggle-eng="'+e.id+'">'+(e.active?'Deactivate':'Activate')+'</button>'
+      + '<button class="icon-btn" data-rename-eng="'+e.id+'">Rename</button>'
+      + '</div></div>';
+  });
+  var html = '<div class="fade">'
+    + '<div class="card"><div class="card-title">ENGINEER MANAGEMENT</div>'
+    + engRows
+    + '<button class="bs" style="margin-top:.75rem;border-color:var(--green);color:var(--green);font-size:.8rem" id="add-eng-btn">+ ADD ENGINEER</button></div>'
+    + '<div class="card"><div class="card-title">SITE MANAGEMENT</div>'
+    + '<p style="font-size:.72rem;color:var(--muted);margin-bottom:.65rem">'+S.sites.length+' sites · '+S.sites.filter(function(s){return s.pm;}).length+' on PM schedule</p>'
+    + '<button class="bs" style="border-color:var(--blue);color:var(--blue);font-size:.8rem" id="add-site-btn">+ ADD SITE</button></div>'
+    + '<div class="card"><div class="card-title">ONEDRIVE SYNC</div>'
+    + '<p style="font-size:.72rem;color:var(--muted);margin-bottom:.65rem">'+(WEBHOOK_URL?'Webhook connected':'Not connected — setup required')+'</p>'
+    + '<button class="bs" style="border-color:var(--blue);color:var(--blue);font-size:.8rem" id="od-setup-btn">'+(WEBHOOK_URL?'Manage Webhook':'Setup Power Automate')+'</button>'
+    + (S.odAccount?'<button class="bs" style="margin-top:.4rem;border-color:var(--green);color:var(--green);font-size:.8rem" id="sync-now-btn">SYNC NOW</button>':'')
+    + '</div>'
+    + '<div class="card"><div class="card-title">EXPORT BACKUP</div>'
+    + '<p style="font-size:.72rem;color:var(--muted);margin-bottom:.65rem">Download all records as JSON</p>'
+    + '<button class="bs" style="font-size:.8rem" id="export-btn">EXPORT DATA</button></div></div>';
+  c.innerHTML = html;
+
+  c.addEventListener('click', function(e) {
+    var te = e.target.closest('[data-toggle-eng]');
+    if (te) { toggleEng(te.dataset.toggleEng); return; }
+    var re = e.target.closest('[data-rename-eng]');
+    if (re) { renameEng(re.dataset.renameEng); return; }
+  });
+  document.getElementById('add-eng-btn').onclick  = addEng;
+  document.getElementById('add-site-btn').onclick = addSite;
+  document.getElementById('od-setup-btn').onclick = function() { go('setup'); };
+  if (document.getElementById('sync-now-btn')) document.getElementById('sync-now-btn').onclick = syncNow;
+  document.getElementById('export-btn').onclick   = exportData;
+}
+
+function toggleEng(id) {
+  var e = S.engineers.find(function(e){return e.id===id;}); if(!e) return;
+  e.active = !e.active; saveLocal(); saveToOD(); renderTab(); toast(e.active?'Engineer activated':'Deactivated');
+}
+function renameEng(id) {
+  var e = S.engineers.find(function(e){return e.id===id;}); if(!e) return;
+  var name = prompt('Enter new name:', e.name);
+  if (name && name.trim()) { e.name = name.trim(); saveLocal(); saveToOD(); renderTab(); toast('Name updated'); }
+}
+function addEng() {
+  var name = prompt('New engineer name:');
+  if (!name || !name.trim()) return;
+  var cols = ['#f97316','#3ddc84','#5ba3f5','#fbbf24','#22d3ee','#c084fc'];
+  S.engineers.push({id:'E'+Date.now(),name:name.trim(),role:'engineer',active:true,color:cols[S.engineers.length%cols.length]});
+  saveLocal(); saveToOD(); renderTab(); toast('Engineer added');
+}
+function addSite() {
+  var name = prompt('Site name:'); if (!name||!name.trim()) return;
+  var cust = prompt('Customer:');  if (!cust) return;
+  var pm   = confirm('Include in PM schedule?');
+  S.sites.push({id:'S'+Date.now(),name:name.trim(),customer:cust.trim(),pm:pm,lastPM:pm?todayStr():null});
+  saveLocal(); saveToOD(); renderTab(); toast('Site added');
+}
+function exportData() {
+  var data = JSON.stringify({engineers:S.engineers,sites:S.sites,tickets:S.tickets,exported:new Date().toISOString()},null,2);
+  var blob = new Blob([data],{type:'application/json'});
+  var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'viasat-fieldops-'+todayStr()+'.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
+// ── SETUP ──────────────────────────────────────
+function renderSetup(c) {
+  var html = '<div class="fade">'
+    + '<p style="font-family:var(--head);font-size:1.4rem;color:var(--orange);letter-spacing:.08em;margin-bottom:.2rem">POWER AUTOMATE SETUP</p>'
+    + '<p style="font-size:.68rem;color:var(--muted);margin-bottom:1.4rem">Connect to Excel in OneDrive in 10 minutes. No Azure or IT needed.</p>';
+  var steps = [
+    'Go to <strong>make.powerautomate.com</strong> and sign in with <strong>viasatoman.fieldops@outlook.com</strong>',
+    'Click <strong>+ Create</strong> → <strong>Instant cloud flow</strong> → name it <strong>ViasatFieldOps</strong> → choose <strong>"When an HTTP request is received"</strong> → click <strong>Create</strong>',
+    'Click the <strong>"When an HTTP request is received"</strong> step → paste this into the <strong>Request Body JSON Schema</strong> box:<div class="code-box" style="font-size:.6rem;word-break:break-all">{"type":"object","properties":{"ticketNo":{"type":"string"},"date":{"type":"string"},"type":{"type":"string"},"siteName":{"type":"string"},"customer":{"type":"string"},"engineer":{"type":"string"},"startTime":{"type":"string"},"stopTime":{"type":"string"},"hoursOnSite":{"type":"string"},"contractNo":{"type":"string"},"caseId":{"type":"string"},"description":{"type":"string"},"rft":{"type":"string"},"pmResult":{"type":"string"},"materials":{"type":"string"},"vehicleId":{"type":"string"},"mileage":{"type":"string"},"travel":{"type":"string"},"photos":{"type":"string"},"gps":{"type":"string"},"clientName":{"type":"string"},"status":{"type":"string"},"approvedBy":{"type":"string"},"submittedAt":{"type":"string"},"rigNo":{"type":"string"}}}</div>',
+    'Click <strong>+ New step</strong> → search <strong>Excel Online</strong> → choose <strong>"Add a row into a table"</strong>. Set: Location=OneDrive, Document Library=OneDrive, File=ViasatFieldOps_Records.xlsx, Table=FieldRecords. Then map each column to the matching field from the previous step.',
+    'Click <strong>Save</strong>. Copy the <strong>HTTP POST URL</strong> that appears in the first step. Paste it below.'
+  ];
+  steps.forEach(function(text, i) {
+    html += '<div class="setup-step"><div class="setup-n">'+(i+1)+'</div><p style="font-size:.75rem;color:var(--muted);line-height:1.6">'+text+'</p></div>';
+  });
+  html += '<label class="fl">POWER AUTOMATE WEBHOOK URL</label>'
+    + '<input class="fi" id="wh-inp" value="'+(WEBHOOK_URL||'')+'" placeholder="https://prod-xx.westus.logic.azure.com:443/workflows/..." style="font-size:.72rem">'
+    + '<button class="bp" style="margin-top:.8rem" id="save-wh-btn">SAVE & TEST CONNECTION</button>'
+    + (WEBHOOK_URL?'<p style="font-size:.68rem;color:var(--green);text-align:center;margin-top:.6rem">Webhook URL saved</p>':'')
+    + '<div class="card" style="margin-top:1rem;border-color:#0d1a2a"><div class="card-title" style="color:var(--blue)">WHERE IS DATA STORED?</div>'
+    + '<p style="font-size:.72rem;color:var(--muted);line-height:1.6">Every submitted ticket is sent to Power Automate which adds a new row to <strong style="color:var(--text)">ViasatFieldOps_Records.xlsx</strong> in your OneDrive. Open it anytime in Excel.</p></div>'
+    + '</div>';
+  c.innerHTML = html;
+  document.getElementById('save-wh-btn').onclick = function() {
+    var v = document.getElementById('wh-inp').value.trim();
+    if (!v || !v.startsWith('http')) { toast('Enter a valid webhook URL','var(--red)'); return; }
+    WEBHOOK_URL = v;
+    localStorage.setItem('vo2_webhook', v);
+    updateSbar();
+    toast('Webhook saved! Testing…','var(--yellow)');
+    // Send a test ping
+    fetch(v, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ticketNo:'TEST',date:todayStr(),type:'TEST',siteName:'Connection Test',customer:'',engineer:'Nasser Al Habsi',startTime:'',stopTime:'',hoursOnSite:'',contractNo:'',caseId:'',description:'Test connection from Viasat Field Ops app',rft:'N/A',pmResult:'N/A',materials:'',vehicleId:'',mileage:'',travel:'',photos:'0',gps:'',clientName:'',status:'test',approvedBy:'',submittedAt:new Date().toISOString().replace('T',' ').slice(0,16),rigNo:''})})
+    .then(function(r){ toast(r.ok?'Connected! Test row sent to Excel':'Webhook responded with error '+r.status, r.ok?'var(--green)':'var(--red)'); renderSetup(c); })
+    .catch(function(e){ toast('Could not reach webhook — check URL','var(--red)'); });
+  };
+}
+
+// ── SIGNATURE PAD ──────────────────────────────
+function openSig(target) {
+  S.sigTarget = target;
+  document.getElementById('sig-title').textContent = target==='client' ? 'CLIENT SIGNATURE (DSV/OIM/TP)' : 'FIELD ENGINEER SIGNATURE';
+  document.getElementById('sig-sub').textContent   = target==='client' ? 'Rig Incharge — sign to confirm work completion' : 'Engineer signature';
+  document.getElementById('sig-modal').style.display = 'flex';
+  clearSig();
+}
+function closeSig()  { document.getElementById('sig-modal').style.display = 'none'; }
+function clearSig()  { var cv=document.getElementById('sig-canvas'); cv.getContext('2d').clearRect(0,0,cv.width,cv.height); }
+function confirmSig(){
+  var cv  = document.getElementById('sig-canvas');
+  var b64 = cv.toDataURL('image/png');
+  closeSig();
+  if (S.sigTarget==='client') S.newTkt.clientSig = b64;
+  else                         S.newTkt.engSig    = b64;
+  renderTab();
+}
+function sigPos(e, cv) {
+  var r=cv.getBoundingClientRect(), sx=cv.width/r.width, sy=cv.height/r.height;
+  var src=e.touches?e.touches[0]:e;
+  return {x:(src.clientX-r.left)*sx, y:(src.clientY-r.top)*sy};
+}
+document.addEventListener('mousedown',  function(e){if(e.target.id==='sig-canvas'){S.sigDraw=true;S.sigLast=sigPos(e,e.target);}});
+document.addEventListener('mouseup',    function(){S.sigDraw=false;S.sigLast=null;});
+document.addEventListener('mousemove',  function(e){if(!S.sigDraw||e.target.id!=='sig-canvas')return;drawSig(e);});
+document.addEventListener('touchstart', function(e){if(e.target.id==='sig-canvas'){S.sigDraw=true;S.sigLast=sigPos(e,e.target);e.preventDefault();}},{passive:false});
+document.addEventListener('touchend',   function(){S.sigDraw=false;S.sigLast=null;});
+document.addEventListener('touchmove',  function(e){if(!S.sigDraw||e.target.id!=='sig-canvas')return;e.preventDefault();drawSig(e);},{passive:false});
+function drawSig(e) {
+  var cv=document.getElementById('sig-canvas'), pos=sigPos(e,cv), ctx=cv.getContext('2d');
+  ctx.beginPath();ctx.moveTo(S.sigLast.x,S.sigLast.y);ctx.lineTo(pos.x,pos.y);
+  ctx.strokeStyle='#1a1a1a';ctx.lineWidth=2.5;ctx.lineCap='round';ctx.stroke();
+  S.sigLast=pos;
+}
+
+// ── CONFIRM MODAL ──────────────────────────────
+var _confirmCb = null;
+function showConfirm(title, ico, msg, cb) {
+  document.getElementById('cm-title').textContent = title;
+  document.getElementById('cm-ico').textContent   = ico;
+  document.getElementById('cm-msg').textContent   = msg;
+  _confirmCb = cb;
+  document.getElementById('confirm-modal').style.display = 'flex';
+  document.getElementById('cm-ok').onclick = function() { closeConfirm(); if(cb) cb(); };
+}
+function closeConfirm() { document.getElementById('confirm-modal').style.display = 'none'; }
+
+// ── PDF VIEWER (inline modal — no popup, works on iOS) ──────
+var _currentPDFHtml = '';
+
+function openPrintWindow(html, title) {
+  _currentPDFHtml = html;
+  var modal   = document.getElementById('pdf-modal');
+  var iframe  = document.getElementById('pdf-iframe');
+  var titleEl = document.getElementById('pdf-modal-title');
+  titleEl.textContent = title || 'DOCUMENT';
+  modal.style.display = 'flex';
+
+  // Write HTML into iframe - no popup needed, works natively on iOS Safari
+  iframe.srcdoc = html;
+
+  // Share / Print button — triggers native iOS/desktop print dialog
+  // On iOS: print dialog has "Save to Files" and share options built in
+  document.getElementById('pdf-share-btn').onclick = function() {
+    try {
+      iframe.contentWindow.focus();
+      iframe.contentWindow.print();
+    } catch(e) {
+      // Fallback: write to blob and use location
+      try {
+        var blob = new Blob([html], {type:'text/html'});
+        var url  = URL.createObjectURL(blob);
+        window.location.href = url;
+      } catch(e2) {
+        toast('Use the browser Share button to save','var(--yellow)');
+      }
+    }
+  };
+}
+
+function closePDFModal() {
+  document.getElementById('pdf-modal').style.display = 'none';
+  document.getElementById('pdf-iframe').srcdoc = 'about:blank';
+}
+
+function fieldTicketHTML(tkt) {
+  var hrs  = tkt.startTime&&tkt.stopTime ? calcHours(tkt.startTime,tkt.stopTime) : '—';
+  var mats = (tkt.materials||[]).filter(function(m){return m.desc;});
+  var matRows = '';
+  for (var i=0; i<5; i++) {
+    var m = mats[i]||{qty:'',desc:'',serial:''};
+    matRows += '<tr><td style="text-align:center">'+m.qty+'</td><td>'+m.desc+'</td><td>'+m.serial+'</td><td></td><td></td><td></td></tr>';
+  }
+  var svcBar = ['INS','DEC','SVC','PRJ','PM'].map(function(s){
+    return '<span style="margin-right:10px;'+(tkt.type===s?'font-weight:bold;color:#1e64b4':'color:#aaa')+'">'+s+' - '+{INS:'INSTALL',DEC:'DECOMMISSION',SVC:'SVC CALL',PRJ:'PROJECT',PM:'PREV.MAINT'}[s]+'</span>';
+  }).join('');
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Field Ticket '+tkt.ticketNo+'</title>'
+    +'<style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:Arial,sans-serif;font-size:9pt;padding:10mm 12mm;color:#111;}'
+    +'.logo{font-size:24pt;font-weight:bold;color:#1e64b4;letter-spacing:-1px;}.logo .dot{color:#22b8d4;}'
+    +'table{width:100%;border-collapse:collapse;margin-bottom:5px;}td,th{border:1px solid #ccc;padding:3px 5px;vertical-align:top;}'
+    +'th{background:#f0f0f0;font-weight:bold;}.hl{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}'
+    +'@media print{body{padding:6mm 8mm;}}</style></head><body>'
+    +'<div class="hl"><div><div class="logo">Viasat<span class="dot">.</span></div>'
+    +'<div style="font-size:7pt;color:#666;margin-top:2px">customercare@rig.net | Qatar +974 4458 6020 | UAE +971 4 367 6010 | KSA +966 13 510 6020</div></div>'
+    +'<div style="text-align:right"><div style="font-size:9pt;color:#666">FIELD TICKET No:</div>'
+    +'<div style="font-size:14pt;font-weight:bold">'+(tkt.ticketNo||'')+'</div></div></div>'
+    +'<table style="margin-bottom:4px"><tr>'
+    +'<td><b>Customer A:</b> '+(tkt.customer||'')+'</td>'
+    +'<td><b>Rig No./Name:</b> '+(tkt.rigNo||tkt.siteName||'')+'</td>'
+    +'<td><b>DATE:</b> '+fmtDate(tkt.date)+'</td></tr>'
+    +'<tr><td><b>Customer B:</b></td><td><b>Contract #:</b> '+(tkt.contractNo||'')+'</td><td><b>Service Code:</b> '+tkt.type+'</td></tr>'
+    +'<tr><td><b>Customer C:</b></td><td><b>Well:</b></td><td><b>Case/Ticket ID:</b> '+(tkt.caseId||'')+'</td></tr></table>'
+    +'<div style="font-size:7.5pt;margin:5px 0"><b>SERVICES:</b> '+svcBar+'</div>'
+    +'<table><thead><tr><th style="width:6%">Date</th><th style="width:20%">Field Engineer</th><th style="width:6%">Start</th><th style="width:6%">Stop</th><th style="width:6%">Hours</th><th>Service / Description</th><th style="width:8%">Rate/Hr</th><th style="width:7%">Cost</th></tr></thead>'
+    +'<tbody><tr><td>'+fmtDateShort(tkt.date)+'</td><td>'+tkt.engName+'</td><td>'+tkt.startTime+'</td><td>'+(tkt.stopTime||'')+'</td><td>'+hrs+'</td>'
+    +'<td style="white-space:pre-wrap">'+(tkt.desc||'')+'</td><td></td><td></td></tr>'
+    +'<tr><td colspan="8" style="height:20px"></td></tr>'
+    +'<tr><td colspan="8" style="height:20px"></td></tr></tbody></table>'
+    +'<table style="margin-top:4px"><thead><tr><th style="width:7%">Date</th><th style="width:18%">Vehicle ID</th><th style="width:22%">Round Trip Mileage</th><th>Travel To and From</th><th style="width:8%">Rate/km</th><th style="width:7%">Cost</th></tr></thead>'
+    +'<tbody><tr><td>'+fmtDateShort(tkt.date)+'</td><td>'+(tkt.vehicleId||'')+'</td><td>'+(tkt.mileage||'')+'</td><td>'+(tkt.travel||'')+'</td><td></td><td></td></tr></tbody></table>'
+    +'<table style="margin-top:4px"><thead><tr><th style="width:6%">Qty</th><th>Material Description</th><th style="width:28%">Asset Tag / Serial Number</th><th style="width:7%">Add</th><th style="width:8%">Remove</th><th style="width:11%">Cost/Rate</th></tr></thead>'
+    +'<tbody>'+matRows+'</tbody></table>'
+    +'<table style="margin-top:6px;border:none"><tr>'
+    +'<td style="border:none;width:50%;padding-right:8px">'
+    +(tkt.clientSig?'<img src="'+tkt.clientSig+'" style="height:48px;display:block;margin-bottom:2px">':'<div style="height:48px"></div>')
+    +'<div style="border-top:1px solid #333;padding-top:2px;font-size:7.5pt">Authorized Customer Representative - Printed</div>'
+    +'<div style="font-weight:bold;margin-top:1px">'+(tkt.clientName||'')+'</div>'
+    +'<div style="border-top:1px solid #333;margin-top:14px;padding-top:2px;font-size:7.5pt">Authorized Customer Representative - Signature</div>'
+    +'</td><td style="border:none;padding-left:8px">'
+    +'<div style="font-weight:bold;font-size:8pt;margin-bottom:3px">Viasat RigNet Field Engineer</div>'
+    +(tkt.engSig?'<img src="'+tkt.engSig+'" style="height:48px;display:block;margin-bottom:2px">':'<div style="height:48px"></div>')
+    +'<div style="border-top:1px solid #333;padding-top:2px;font-size:7.5pt">Print Name over Signature</div>'
+    +'<div style="font-weight:bold;margin-top:1px">'+tkt.engName+'</div>'
+    +'<div style="font-size:7.5pt;margin-top:3px">Date: '+fmtDate(tkt.date)+'</div>'
+    +'</td></tr></table>'
+    +(tkt.gps?'<div style="font-size:7pt;color:#888;margin-top:4px">GPS: '+tkt.gps.lat+', '+tkt.gps.lng+'</div>':'')
+    +'<div style="text-align:center;font-size:7pt;color:#aaa;margin-top:8px">www.viasat.com</div>'
+    +'</body></html>';
+}
+
+function pmChecklistHTML(tkt) {
+  var v = tkt.vsat || {};
+  var checkRows = '';
+  CHECKLIST.forEach(function(ci) {
+    var val = tkt.checklist[ci.id];
+    var yes = val===true?'☑':'☐', no = val===false?'☑':'☐', na = val==='na'?'(N/A)':'';
+    var extra = '';
+    if (ci.id==='c14') {
+      extra = '<table style="width:100%;font-size:7pt;margin-top:2px"><tr>'
+        +'<td><b>Ethernet Status:</b> '+(v.ethernetStatus||'—')+'</td>'
+        +'<td><b>Satellite Beam ID:</b> '+(v.satelliteBeamId||'—')+'</td>'
+        +'<td><b>Auto Beam:</b> '+(v.autoBeamSelection||'—')+'</td></tr><tr>'
+        +'<td><b>Modem Status:</b> '+(v.modemStatus||'—')+'</td>'
+        +'<td><b>Demodulator:</b> '+(v.demodulator||'—')+'</td>'
+        +'<td><b>Actual Receive PL:</b> '+(v.actualReceivePL||'—')+'</td></tr><tr>'
+        +'<td><b>Software Ver:</b> '+(v.softwareVersion||'—')+'</td>'
+        +'<td><b>MRC Tx Power:</b> '+(v.mrcTxPower||'—')+'</td>'
+        +'<td><b>Frame Error Ratio:</b> '+(v.frameErrorRatio||'—')+'</td></tr><tr>'
+        +'<td><b>CW Frame Err:</b> '+(v.cwFrameErrorRatio||'—')+'</td>'
+        +'<td><b>EsNo:</b> '+(v.esno||'—')+'</td><td></td></tr></table>';
+    }
+    checkRows += '<tr><td style="font-size:8pt;padding:3px 5px">'+ci.text+extra+'</td>'
+      +'<td style="text-align:center;width:36px">'+yes+(na?'<div style="font-size:7pt;color:#666">'+na+'</div>':'')+'</td>'
+      +'<td style="text-align:center;width:36px">'+no+'</td></tr>';
+  });
+  var photoSection = '';
+  if (tkt.photos && tkt.photos.length) {
+    var thumbs = tkt.photos.map(function(p){return '<img src="'+p+'" style="width:88px;height:66px;object-fit:cover;border:1px solid #ccc;border-radius:2px;margin:2px">';}).join('');
+    photoSection = '<div style="margin-top:8px"><b style="font-size:8.5pt">Photos attached:</b><div style="margin-top:4px">'+thumbs+'</div></div>';
+  } else {
+    photoSection = '<p style="font-size:8pt;color:#888;margin-top:6px">No photos attached.</p>';
+  }
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PM Checklist '+tkt.ticketNo+'</title>'
+    +'<style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:Arial,sans-serif;font-size:9pt;padding:10mm 12mm;color:#111;}'
+    +'.logo{font-size:20pt;font-weight:bold;color:#1e64b4;}.logo .dot{color:#22b8d4;}'
+    +'table{width:100%;border-collapse:collapse;margin-bottom:5px;}td,th{border:1px solid #ccc;padding:3px 5px;vertical-align:top;}'
+    +'th{background:#f0f0f0;font-weight:bold;}h1{font-size:14pt;color:#1e64b4;margin:5px 0 2px;}h2{font-size:10pt;margin-bottom:5px;}'
+    +'@media print{body{padding:6mm 8mm;}}</style></head><body>'
+    +'<div style="display:flex;justify-content:space-between;margin-bottom:8px">'
+    +'<div class="logo">Viasat<span class="dot">.</span></div>'
+    +'<div style="font-size:7.5pt;color:#666;text-align:right">Doc Type: Viasat Oman PM Checklist<br>Rev: [2025v1] · Effective: 24 Mar 2025</div></div>'
+    +'<h1>Viasat VSAT PM Checklist</h1><h2>Viasat Preventive Maintenance</h2>'
+    +'<table style="margin-bottom:6px"><tr>'
+    +'<td style="background:#f0f0f0;width:68%">Conducted Preventive Maintenance. The VSAT terminal was tested and is running in good working condition.</td>'
+    +'<td style="text-align:center;width:16%"><b>YES</b><br>'+(tkt.pmOK===true?'☑':'☐')+'</td>'
+    +'<td style="text-align:center;width:16%"><b>NO</b><br>'+(tkt.pmOK===false?'☑':'☐')+'</td></tr></table>'
+    +'<table style="margin-bottom:6px"><tr><th>FE Name</th><td>'+tkt.engName+'</td></tr>'
+    +'<tr><th>Oman VSAT Remote Site Name</th><td>'+tkt.siteName+'</td></tr>'
+    +'<tr><th>Date</th><td>'+fmtDate(tkt.date)+'</td></tr></table>'
+    +'<table><thead><tr><th>Preventive Maintenance Checklist</th><th style="width:36px">YES</th><th style="width:36px">NO</th></tr></thead>'
+    +'<tbody>'+checkRows+'</tbody></table>'
+    +photoSection
+    +'<table style="margin-top:10px;border:none"><tr>'
+    +'<td style="border:none;width:50%;padding-right:10px">'
+    +'<b>Signed and Accepted by DSV/OIM/TP</b>'
+    +(tkt.clientSig?'<div style="margin:4px 0;min-height:48px"><img src="'+tkt.clientSig+'" style="height:48px"></div>':'<div style="height:48px;border-bottom:1px solid #333;margin:4px 0"></div>')
+    +'<div style="font-size:7.5pt">Print Name over Signature | Title</div>'
+    +'<div style="font-weight:bold;margin-top:1px">'+(tkt.clientName||'')+'</div>'
+    +'<div style="border-top:1px solid #333;margin-top:8px;padding-top:2px;font-size:7.5pt">Date: '+fmtDate(tkt.date)+'</div>'
+    +'</td><td style="border:none;padding-left:10px">'
+    +'<b>Viasat RigNet Field Engineer</b>'
+    +(tkt.engSig?'<div style="margin:4px 0;min-height:48px"><img src="'+tkt.engSig+'" style="height:48px"></div>':'<div style="height:48px;border-bottom:1px solid #333;margin:4px 0"></div>')
+    +'<div style="font-size:7.5pt">Print Name over Signature</div>'
+    +'<div style="font-weight:bold;margin-top:1px">'+tkt.engName+'</div>'
+    +'<div style="border-top:1px solid #333;margin-top:8px;padding-top:2px;font-size:7.5pt">Date: '+fmtDate(tkt.date)+'</div>'
+    +'</td></tr>'
+    +'<tr><td style="border:none;padding-right:10px;padding-top:10px">'
+    +'<div class="logo" style="font-size:14pt;margin-bottom:3px">Viasat<span class="dot">.</span></div>'
+    +'<b>Reviewed by</b><div style="border-bottom:1px solid #333;min-height:32px;margin:4px 0"></div>'
+    +'<div style="font-size:7.5pt">Print Name over Signature<br>ME Service Coordinator</div>'
+    +(tkt.reviewedBy?'<div style="font-weight:bold;margin-top:1px">'+tkt.reviewedBy+'</div>':'')
+    +'</td><td style="border:none;padding-left:10px;padding-top:10px">'
+    +'<div class="logo" style="font-size:14pt;margin-bottom:3px">Viasat<span class="dot">.</span></div>'
+    +'<b>Approved by</b><div style="border-bottom:1px solid #333;min-height:32px;margin:4px 0"></div>'
+    +'<div style="font-size:7.5pt">Print Name over Signature<br>ME Operations Supervisor</div>'
+    +(tkt.approvedBy?'<div style="font-weight:bold;margin-top:1px">'+tkt.approvedBy+'</div>':'')
+    +'</td></tr></table>'
+    +'<div style="text-align:center;font-size:7pt;color:#aaa;margin-top:8px;border-top:1px solid #eee;padding-top:4px">Copyright 2025 Viasat. All rights reserved. | Uncontrolled when printed or transmitted electronically | www.viasat.com</div>'
+    +'</body></html>';
+}
+
+// ── INIT ───────────────────────────────────────
+function init() {
+  try {
+    loadLocal();
+    document.getElementById('hdr-date').textContent = new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}).toUpperCase();
+    renderLogin();
+    if (WEBHOOK_URL) { updateSbar(); }  } catch(e) {
+    console.error('Init error', e);
+    try { renderLogin(); } catch(e2) {}
+  }
+}
+
+init();
+</script>
+
+
+</body>
+</html>
